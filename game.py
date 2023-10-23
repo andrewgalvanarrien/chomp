@@ -3,7 +3,7 @@ import time
 import sys
 import fish
 import random
-
+import minnow
 from settings import *
 
 pygame.init()
@@ -22,7 +22,8 @@ seagrass.set_colorkey((0,0,0))
 star.set_colorkey((0,0,0))
 rock.set_colorkey((0,0,0))
 
-my_fish = fish.Fish(200, 200) # create a new fish
+my_fish = fish.Fish() # create a new fish
+my_minnow = minnow.Minnow(100, 250)
 background = screen.copy()
 
 def draw_background():
@@ -39,7 +40,7 @@ def draw_background():
         background.blit(seagrass, (x, y, TILE_SIZE, TILE_SIZE))
 
     text = game_font.render("Chomp!", True, (255, 69, 0))
-    background.blit(text, (SCREEN_WIDTH//2 - text.get_width()//2,SCREEN_HEIGHT//2 - text.get_height()//2))
+    #background.blit(text, (SCREEN_WIDTH//2 - text.get_width()//2,SCREEN_HEIGHT//2 - text.get_height()//2))
 
 draw_background()
 
@@ -51,15 +52,28 @@ while True:
             pygame.quit()
             sys.exit()
 
-        if event.type == pygame.KEYDOWN:
+        elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
-                my_fish.move_left()
-                print("left arrow pressed")
+                my_fish.moving_left = True
             if event.key == pygame.K_RIGHT:
-                my_fish.move_right()
-                print("right arrow pressed")
+                my_fish.moving_right = True
+            if event.key == pygame.K_UP:
+                my_fish.moving_up = True
+            if event.key == pygame.K_DOWN:
+                my_fish.moving_down = True
+        elif event.type == pygame.KEYUP:
+            if event.key == pygame.K_LEFT:
+                my_fish.moving_left = False
+            if event.key == pygame.K_RIGHT:
+                my_fish.moving_right = False
+            if event.key == pygame.K_UP:
+                my_fish.moving_up = False
+            if event.key == pygame.K_DOWN:
+                my_fish.moving_down = False
 
     # update screen
     screen.blit(background, (0,0))
+    my_fish.update()
+    my_minnow.draw(screen)
     my_fish.draw(screen)
     pygame.display.flip()
