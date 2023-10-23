@@ -22,9 +22,11 @@ seagrass.set_colorkey((0,0,0))
 star.set_colorkey((0,0,0))
 rock.set_colorkey((0,0,0))
 
-my_fish = fish.Fish() # create a new fish
-my_minnow = minnow.Minnow(100, 250)
 background = screen.copy()
+my_fish = fish.Fish() # create a new fish
+my_minnows = []
+for i in range(NUM_MINNOWS):
+    my_minnows.append(minnow.Minnow(random.randint(0, SCREEN_WIDTH- TILE_SIZE), random.randint(0, WATER_BOTTOM-2*TILE_SIZE)))
 
 def draw_background():
 
@@ -74,6 +76,7 @@ while True:
     # update screen
     screen.blit(background, (0,0))
     my_fish.update()
-    my_minnow.draw(screen)
+    for my_minnow in my_minnows:
+        my_minnow.draw(screen)
     my_fish.draw(screen)
     pygame.display.flip()
