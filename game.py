@@ -1,13 +1,13 @@
 import pygame
-import time
 import sys
 import fish
 import random
-import minnow
+from minnow import Minnow, minnows
 from settings import *
 
 pygame.init()
 
+# score =
 game_font = pygame.font.Font("assets/fonts/Black_Crayon.ttf", 128)
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Chomp!")
@@ -22,11 +22,14 @@ seagrass.set_colorkey((0,0,0))
 star.set_colorkey((0,0,0))
 rock.set_colorkey((0,0,0))
 
+clock = pygame.time.Clock()
+
 background = screen.copy()
-my_fish = fish.Fish() # create a new fish
-my_minnows = []
-for i in range(NUM_MINNOWS):
-    my_minnows.append(minnow.Minnow(random.randint(0, SCREEN_WIDTH- TILE_SIZE), random.randint(0, WATER_BOTTOM-2*TILE_SIZE)))
+my_fish = fish.Fish()  # create a new fish
+for _ in range(NUM_MINNOWS):
+    minnows.add(Minnow(random.randint(0, SCREEN_WIDTH- TILE_SIZE),
+                          random.randint(0, WATER_BOTTOM-2*TILE_SIZE)))
+
 
 def draw_background():
 
@@ -42,11 +45,12 @@ def draw_background():
         background.blit(seagrass, (x, y, TILE_SIZE, TILE_SIZE))
 
     text = game_font.render("Chomp!", True, (255, 69, 0))
-    #background.blit(text, (SCREEN_WIDTH//2 - text.get_width()//2,SCREEN_HEIGHT//2 - text.get_height()//2))
+    # background.blit(text, (SCREEN_WIDTH//2 - text.get_width()//2,SCREEN_HEIGHT//2 - text.get_height()//2))
+
 
 draw_background()
 
-while True:
+while len(minnows) > 0:
     for event in pygame.event.get():
 
         if event.type == pygame.QUIT:
@@ -73,10 +77,18 @@ while True:
             if event.key == pygame.K_DOWN:
                 my_fish.moving_down = False
 
+    # update game objects
+    my_fish.update()
+    minnows.update()
+
+    # check for collisions
+    chomped_minnows = pygame.sprite.spritecollide(my_fish, minnows, False)
+    # if len(chomped_minnows) > 0:
+        # print(f"Chomped a minnow, your score is {score}!")
+
     # update screen
     screen.blit(background, (0,0))
-    my_fish.update()
-    for my_minnow in my_minnows:
-        my_minnow.draw(screen)
     my_fish.draw(screen)
+    minnows.draw(screen)
     pygame.display.flip()
+    clock.tick(60)
